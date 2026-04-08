@@ -15,9 +15,9 @@ for f_path, headers in [
     (pit_file, ['scout', 'team_num', 'drive_type', 'notes']),
     (match_file, ['scout', 'team_num', 'match_num', 'points', 'parking', 'fouls', 'match_notes'])
 ]:
-  if not os.path.exists(f_path):
-    with open(f_path, 'w', newline='') as f:
-      csv.writer(f).writerow(headers)
+    if not os.path.exists(f_path):
+        with open(f_path, 'w', newline='') as f:
+            csv.writer(f).writerow(headers)
 
 # --- Modern UI Theme (CSS) ---
 base_style = '''
