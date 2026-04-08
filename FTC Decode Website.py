@@ -39,8 +39,8 @@ base_style = '''
     background-image: radial-gradient(circle at 2px 2px, #1e293b 1px, transparent 0); background-size: 40px 40px;
   }
   nav { 
-    background: var(--nav-bg); padding: 0 20px; display: flex; gap: 25px; justify-content: center; 
-    height: 60px; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); padding: 0 30px; display: flex; 
+    height: 70px; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
   }
   nav a { color: #94a3b8; text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; }
   nav a:hover { color: white; }
