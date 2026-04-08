@@ -228,6 +228,12 @@ def data_view():
     if 'user' not in session: return redirect('/login')
     pit_dict = get_pit_info()
     team_stats = {}
+
+    filter_team = request.args.get('filter_team')
+    for t, info in pit_dict.items():
+        if filter_team and t != filter_team: continue
+        team_stats[t] = {'total': 0, 'count': 0, 'avg': 0.0, 'drive_type': info['drive_type'], 'notes': info['notes']}
+
     if os.path.exists(match_file):
         with open(match_file, 'r') as file:
             reader = csv.DictReader(file)
