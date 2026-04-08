@@ -35,7 +35,8 @@ base_style = '''
     --border: #e2e8f0;
   }
   body { 
-    font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text-main); line-height: 1.6;
+    font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg); color: var(--text-main); 
+    background-image: radial-gradient(circle at 2px 2px, #1e293b 1px, transparent 0); background-size: 40px 40px;
   }
   nav { 
     background: var(--nav-bg); padding: 0 20px; display: flex; gap: 25px; justify-content: center; 
