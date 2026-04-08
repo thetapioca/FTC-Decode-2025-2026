@@ -170,7 +170,7 @@ analysis_page = base_style + nav_bar + '''
             <div class="progress-bg"><div class="progress-fill" style="width: {{ stats.avg if stats.avg < 100 else 100 }}%"></div></div>
           </td>
           <td>{{ stats.count }}</td>
-          <td><code>{{ stats.drive }}</code></td>
+          <td><code>{{ stats.drive_type }}</code></td>
           <td style="font-size: 11px; color: var(--text-muted);">{{ stats.notes }}</td>
         </tr>
         {% endfor %}
