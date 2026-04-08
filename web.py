@@ -229,8 +229,8 @@ def data_view():
     pit_dict = get_pit_info()
     team_stats = {}
     if os.path.exists(match_file):
-        with open(match_file, 'r') as f:
-            reader = csv.DictReader(f)
+        with open(match_file, 'r') as file:
+            reader = csv.DictReader(file)
             for row in reader:
                 t = row['team_num']
                 if t not in team_stats:
