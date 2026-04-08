@@ -189,7 +189,7 @@ def get_pit_info():
         with open(pit_file, 'r') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                info[row['team_num']] = {'drive': row['drive_type'], 'notes': row['notes']}
+                info[row['team_num']] = {'drive_type': row['drive_type'], 'notes': row['notes']}
     return info
 
 
