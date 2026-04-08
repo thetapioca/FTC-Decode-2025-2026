@@ -11,9 +11,9 @@ pit_file = 'pit_data.csv'
 match_file = 'match_data.csv'
 
 for f_path, headers in [
-  (user_file, ['username', 'password']),
-  (pit_file, ['scout', 'team_num', 'drive_type', 'notes']),
-  (match_file, ['scout', 'team_num', 'match_num', 'points'])
+    (user_file, ['username', 'password']),
+    (pit_file, ['scout', 'team_num', 'drive_type', 'notes']),
+    (match_file, ['scout', 'team_num', 'match_num', 'points', 'parking', 'fouls', 'match_notes'])
 ]:
   if not os.path.exists(f_path):
     with open(f_path, 'w', newline='') as f:
