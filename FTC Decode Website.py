@@ -1,7 +1,7 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
 import csv
 import os
-#i
+
 app = Flask(__name__)
 app.secret_key = "ftc_championship_key"
 
