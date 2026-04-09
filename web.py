@@ -271,7 +271,7 @@ def register():
     u = request.form['username'].lower().strip()
     p = request.form['password'].lower().strip()
     with open(user_file, 'a', newline='') as f:
-      csv.writer(f).writerow([request.form['username'], request.form['password']])
+      csv.writer(f).writerow([u, p])
     return redirect('/login')
   return render_template_string(base_style + '<div class="container" style="max-width:400px"><div class="card"><h2>REGISTER</h2><form method="POST"><input name="username" placeholder="Team Name"><input name="password" placeholder="Team Number"><button>Create Account</button></form></div></div>')
 
