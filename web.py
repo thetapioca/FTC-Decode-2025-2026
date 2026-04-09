@@ -104,7 +104,7 @@ home_page = base_style + nav_bar + '''
 pit_form = base_style + nav_bar + '''
 <div class="container" style="max-width: 600px;">
   <div class="card">
-    <h2>NEW PIT REPORT</h2>
+    <h2>ABOUT MY ROBOT</h2>
     <form method="POST">
       <label>TEAM NUMBER</label>
       <input type="text" inputmode="numeric" name="team_num" placeholder="####" required>
