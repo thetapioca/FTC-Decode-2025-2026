@@ -257,8 +257,8 @@ def login():
             with open(user_file, 'r') as f:
                 for row in csv.reader(f):
                     if row and row[0].upper() == u and row[1] == p:
-                        session['user'] = row[0]
-                        session['team_num'] = row[1]
+                        session['user'] = u
+                        session['team_num'] = p
                         return redirect('/')
         return render_template_string(
             base_style + '<div class="container" style="max-width:400px"><div class="card"><h2>LOGIN</h2><form method="POST"><input name="username" placeholder="Team Name"><input name="password" placeholder="Team Number"><button>LOGIN</button></form><a href="/register" style="font-size:13px; color:var(--text-muted);">Create Account</a><h4>INVALID LOGIN - have you created an account yet?</h4></div></div>')
@@ -269,8 +269,8 @@ def login():
 def register():
   error = ' '
   if request.method == 'POST':
-    u = request.form['username'].strip()
-    p = request.form['password'].strip()
+    u = request.form['username'].upper().strip()
+    p = request.form['password'].upper().strip()
 
     user_exists = False
     if os.path.exists(user_file):
