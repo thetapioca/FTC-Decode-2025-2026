@@ -268,6 +268,8 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
   if request.method == 'POST':
+    u = request.form['username'].lower().strip()
+    p = request.form['password'].lower().strip()
     with open(user_file, 'a', newline='') as f:
       csv.writer(f).writerow([request.form['username'], request.form['password']])
     return redirect('/login')
