@@ -114,23 +114,23 @@ pit_form = base_style + nav_bar + '''
         <option value="Swerve">SWERVE</option>
       </select>
       <label>TURRET PRESENT?</label>
-      <select name="drive_type">
+      <select name="turret">
         <option value="yes">YES</option>
         <option value="no">NO</option>
       </select>
       <label>INDEXER PRESENT?</label>
-      <select name="drive_type">
+      <select name="indexer">
         <option value="yes">YES</option>
         <option value="no">NO</option>
       </select>
       <label>AUTONOMOUS</label>
-      <select name="drive_type">
+      <select name="auto">
         <option value="nothing">DOES NOTHING</option>
         <option value="leaves">LEAVES AREA</option>
         <option value="scores">SCORES</option>
       </select>
       <label>TELEOP</label>
-      <select name="drive_type">
+      <select name="teleop">
         <option value="nothing">NO SCORING</option>
         <option value="scores">SCORES</option>
         <option value="patterns">SCORES PATTERNS</option>
