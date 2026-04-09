@@ -164,6 +164,10 @@ match_form = base_style + nav_bar + '''
         <option value="Minor">MINOR</option>
         <option value="Major">MAJOR</option>
       </select>
+      <label>PATTERNS SCORED</label>
+      <input type='number' name='patterns' required>
+      <label>INDIVIDUAL ARTEFACTS SCORED (IF RECORDED, ELSE SKIP)</label>
+      <input type='number' name='patterns'>
       <label>MATCH OBSERVATIONS</label>
       <textarea name="match_notes" rows="3"></textarea>
       <button type="submit">SAVE MATCH DATA</button>
