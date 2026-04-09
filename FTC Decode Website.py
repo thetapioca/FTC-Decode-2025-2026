@@ -162,7 +162,7 @@ analysis_page = base_style + nav_bar + '''
             <td><strong>{{ team }}</strong></td>
             <td><span class="badge">{{ stats.avg }}</span></td>
             <td>{{ stats.count }}</td>
-            <td>{{ stats.drive }}</td>
+            <td>{{ stats.drive_type }}</td>
             <td style="color: var(--text-muted); font-size: 13px;">{{ stats.notes }}</td>
           </tr>
           {% endfor %}
