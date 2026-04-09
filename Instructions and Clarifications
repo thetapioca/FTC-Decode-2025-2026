@@ -3,3 +3,11 @@ ask Ananya S (VJD) how to connect this repo to your PyCharm, so that you can upl
 the "Commit and Push" button. That button should be near the bottom left of your screen in PyCharm. I think that it requires you to put a message/ title for the update,
 so just put what you think is sensible and roughly describes the update, thanks. If you have any questions, please email me, or write them directly on here. 
 Also if anyone wants to answer a qn or tell the group abt a change pls write it here too. Thanks ;) """
+
+'''Connecting the repo to the PyCharm:
+- go to the 4 lines in the top left corner
+- click 'Project from Version Control'
+- install Git and paste the Github url (make sure you've been invited to the repo and accepted the
+  invitation to join first)
+- make edits
+'''
