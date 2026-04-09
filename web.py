@@ -12,7 +12,7 @@ match_file = 'match_data.csv'
 
 for f_path, headers in [
     (user_file, ['username', 'password']),
-    (pit_file, ['scout', 'team_num', 'drive_type', 'notes']),
+    (pit_file, ['scout', 'team_num', 'drive_type', 'turret', 'indexer', 'auto', 'teleop', 'notes']),
     (match_file, ['scout', 'team_num', 'match_num', 'points', 'parking', 'fouls', 'match_notes'])
 ]:
     if not os.path.exists(f_path):
@@ -206,7 +206,9 @@ def get_pit_info():
     info = {}
     if os.path.exists(pit_file):
         with open(pit_file, 'r') as f:
+            # strip() helps ignore accidental spaces in your manual header update
             reader = csv.DictReader(f)
+            reader.fieldnames = [name.strip() for name in reader.fieldnames]
             for row in reader:
                 t = row.get('team_num')
                 if t:
@@ -231,7 +233,7 @@ def pit():
         with open(pit_file, 'a', newline='') as f:
             csv.writer(f).writerow([
                 session['user'], session['team_num'],
-                request.form['drive_type'], 
+                request.form['drive_type'],
                 request.form['turret'],
                 request.form['indexer'],
                 request.form['auto'],
