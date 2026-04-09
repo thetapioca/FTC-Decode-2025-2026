@@ -257,7 +257,7 @@ def login():
         if os.path.exists(user_file):
             with open(user_file, 'r') as f:
                 for row in csv.reader(f):
-                    if row and row[0] == u and row[1] == p:
+                    if row and row[0].lower() == u and row[1] == p:
                         session['user'] = u
                         return redirect('/')
         return render_template_string(
