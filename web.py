@@ -269,8 +269,8 @@ def login():
 def register():
   error = ' '
   if request.method == 'POST':
-    u = request.form['username'].lower().strip()
-    p = request.form['password'].lower().strip()
+    u = request.form['username'].strip()
+    p = request.form['password'].strip()
 
     user_exists = False
     if os.path.exists(user_file):
