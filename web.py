@@ -262,7 +262,15 @@ def login():
                         return redirect('/')
         return "ACCESS DENIED"
     return render_template_string(
-        base_style + '<div class="container" style="max-width:400px"><div class="card"><h2>LOGIN</h2><form method="POST"><input name="username" placeholder="USER"><input type="password" name="password" placeholder="PASS"><button>LOGIN</button></form></div></div>')
+        base_style + '<div class="container" style="max-width:400px"><div class="card"><h2>LOGIN</h2><form method="POST"><input name="username" placeholder="USER"><input type="password" name="password" placeholder="PASS"><button>LOGIN</button></form><a href="/register" style="font-size:13px; color:var(--text-muted);">Create Account</a></div></div>')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+  if request.method == 'POST':
+    with open(user_file, 'a', newline='') as f:
+      csv.writer(f).writerow([request.form['username'], request.form['password']])
+    return redirect('/login')
+  return render_template_string(base_style + '<div class="container"><div class="card"><h2>REGISTER</h2><form method="POST"><input name="username" placeholder="USER"><input type="password" name="password" placeholder="PASS"><button>Create Account</button></form></div></div>')
 
 
 @app.route('/logout')
