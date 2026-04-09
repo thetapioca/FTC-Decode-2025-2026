@@ -148,8 +148,6 @@ match_form = base_style + nav_bar + '''
   <div class="card">
     <h2>NEW MATCH REPORT</h2>
     <form method="POST">
-      <label>TEAM NUMBER</label>
-      <input type="text" inputmode="numeric" name="team_num" placeholder="####" required>
       <div style="display: flex; gap: 10px;">
         <div style="flex:1"><label>MATCH #</label><input type="number" name="match_num" required></div>
         <div style="flex:1"><label>POINTS</label><input type="number" name="points" required></div>
