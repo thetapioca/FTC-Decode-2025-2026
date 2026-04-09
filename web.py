@@ -215,7 +215,7 @@ def match():
     if request.method == 'POST':
         with open(match_file, 'a', newline='') as f:
             csv.writer(f).writerow([
-                session['user'], request.form['team_num'], request.form['match_num'],
+                session['user'], session['team_num'], request.form['match_num'],
                 request.form['points'], request.form['parking'], request.form['fouls'], request.form['match_notes']
             ])
         return redirect('/data')
