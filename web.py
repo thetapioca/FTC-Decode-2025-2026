@@ -208,7 +208,13 @@ def get_pit_info():
         with open(pit_file, 'r') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                info[row.get('team_num')] = {'team_name': row['scout'],'drive_type': row['drive_type'], 'notes': row['notes']}
+                t = row.get('team_num')
+                if t:
+                    info[t] = {
+                        'team_name': row.get('scout', 'UNKNOWN'),
+                        'drive_type': row.get('drive_type', 'UNKNOWN'),
+                        'notes': row.get('notes', 'N/A')
+                    }
     return info
 
 
