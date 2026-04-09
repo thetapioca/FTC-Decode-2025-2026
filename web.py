@@ -85,6 +85,7 @@ home_page = base_style + nav_bar + '''
     <div class="card">
       <h3 style="margin-top:0">Active Session</h3>
       <p style="color: var(--text-muted)">User: <span style="color:var(--accent)">{{ user }}</span></p>
+      <p style="color: var(--text-muted)">Team Number: <span style="color:var(--accent)">{{ team_num }}</span></p>
     </div>
     <div class="card">
       <h3 style="margin-top:0">Quick Actions</h3>
@@ -106,8 +107,6 @@ pit_form = base_style + nav_bar + '''
   <div class="card">
     <h2>ROBOT DATA</h2>
     <form method="POST">
-      <label>TEAM NUMBER</label>
-      <input type="text" inputmode="numeric" name="team_num" placeholder="####" required>
       <label>DRIVE BASE TYPE</label>
       <select name="drive_type">
         <option value="Mecanum">MECANUM</option>
@@ -164,7 +163,7 @@ analysis_page = base_style + nav_bar + '''
       <tbody>
         {% for team, stats in results.items() %}
         <tr>
-          <td><span class="rank-badge">{{ team }}</span></td>
+          <td><span class="rank-badge">{{ stats.team_name }}: {{team}}</span></td>
           <td>
             {{ stats.avg }}
             <div class="progress-bg"><div class="progress-fill" style="width: {{ stats.avg if stats.avg < 100 else 100 }}%"></div></div>
@@ -189,30 +188,30 @@ def get_pit_info():
         with open(pit_file, 'r') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                info[row['team_num']] = {'drive_type': row['drive_type'], 'notes': row['notes']}
+                info[row.get('team_num')] = {'team_name': row['scout'],'drive_type': row['drive_type'], 'notes': row['notes']}
     return info
 
 
 @app.route('/')
 def home():
-    if 'user' not in session: return redirect('/login')
-    return render_template_string(home_page, user=session['user'])
+    if 'user' not in session or 'team_num' not in session: return redirect('/login')
+    return render_template_string(home_page, user=session['user'], team_num=session['team_num'])
 
 
 @app.route('/pit', methods=['GET', 'POST'])
 def pit():
-    if 'user' not in session: return redirect('/login')
+    if 'user' not in session or 'team_num' not in session: return redirect('/login')
     if request.method == 'POST':
         with open(pit_file, 'a', newline='') as f:
             csv.writer(f).writerow(
-                [session['user'], request.form['team_num'], request.form['drive_type'], request.form['notes']])
+                [session['user'], session['team_num'], request.form['drive_type'], request.form['notes']])
         return redirect('/data')
     return render_template_string(pit_form)
 
 
 @app.route('/match', methods=['GET', 'POST'])
 def match():
-    if 'user' not in session: return redirect('/login')
+    if 'user' not in session or 'team_num' not in session: return redirect('/login')
     if request.method == 'POST':
         with open(match_file, 'a', newline='') as f:
             csv.writer(f).writerow([
@@ -225,14 +224,14 @@ def match():
 
 @app.route('/data')
 def data_view():
-    if 'user' not in session: return redirect('/login')
+    if 'user' not in session or 'team_num' not in session: return redirect('/login')
     pit_dict = get_pit_info()
     team_stats = {}
 
     filter_team = request.args.get('filter_team')
     for t, info in pit_dict.items():
         if filter_team and t != filter_team: continue
-        team_stats[t] = {'total': 0, 'count': 0, 'avg': 0.0, 'drive_type': info['drive_type'], 'notes': info['notes']}
+        team_stats[t] = {'team_name': info['team_name'], 'total': 0, 'count': 0, 'avg': 0.0, 'drive_type': info['drive_type'], 'notes': info['notes']}
 
     if os.path.exists(match_file):
         with open(match_file, 'r') as file:
@@ -253,12 +252,13 @@ def data_view():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        u, p = request.form['username'].lower().strip(), request.form['password'].lower().strip()
+        u, p = request.form['username'].upper().strip(), request.form['password'].upper().strip()
         if os.path.exists(user_file):
             with open(user_file, 'r') as f:
                 for row in csv.reader(f):
-                    if row and row[0].lower() == u and row[1] == p:
-                        session['user'] = u
+                    if row and row[0].upper() == u and row[1] == p:
+                        session['user'] = row[0]
+                        session['team_num'] = row[1]
                         return redirect('/')
         return render_template_string(
             base_style + '<div class="container" style="max-width:400px"><div class="card"><h2>LOGIN</h2><form method="POST"><input name="username" placeholder="Team Name"><input name="password" placeholder="Team Number"><button>LOGIN</button></form><a href="/register" style="font-size:13px; color:var(--text-muted);">Create Account</a><h4>INVALID LOGIN - have you created an account yet?</h4></div></div>')
@@ -277,7 +277,7 @@ def register():
       with open(user_file, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
-          if row and row[0].lower() == u.lower() and row[1] == p:
+          if row and row[0].upper() == u.upper() and row[1] == p:
             user_exists = True
             break
 
@@ -287,6 +287,7 @@ def register():
       with open(user_file, 'a', newline='') as f:
         csv.writer(f).writerow([u, p])
       session['user'] = u
+      session['team_num'] = p
       return redirect('/')
 
   return render_template_string(base_style + f'<div class="container" style="max-width:400px"><div class="card"><h2>REGISTER</h2><form method="POST"><input name="username" placeholder="Team Name"><input name="password" placeholder="Team Number"><button>Create Account</button></form><h4>{error}</h4><a href="/login" style="font-size:13px; color:var(--text-muted);">Already have an account? LOGIN HERE</a></div></div>')

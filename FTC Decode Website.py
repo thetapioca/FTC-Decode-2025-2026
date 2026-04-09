@@ -106,8 +106,6 @@ pit_form = base_style + nav_bar + '''
   <div class="card">
     <h2>Pit Report</h2>
     <form method="POST">
-      <label>Team Number</label>
-      <input type="number" name="team_num" placeholder="e.g. 12345" required>
       <label>Drivetrain Type</label>
       <select name="drive_type">
         <option value="Mecanum">Mecanum</option>
