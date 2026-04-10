@@ -319,7 +319,7 @@ def data_view():
     team_stats = {}
 
     # --- 1. GET ALL URL PARAMETERS ---
-    sort_by = request.args.get('sort', 'score_desc')  # Default: Best score first
+    sort_by = request.args.get('sort', 'score_desc')
     f_search = request.args.get('search', '').upper()
     f_drive = request.args.get('drive', '')
     f_turret = request.args.get('turret', '')
@@ -327,36 +327,50 @@ def data_view():
     f_auto = request.args.get('auto', '')
     f_tele = request.args.get('tele', '')
 
-    # --- 2. FILTER & PROCESS DATA ---
+    # --- 2. INITIALIZE FROM PIT DATA (The "Pit-First" Change) ---
+    for t, p in pit_dict.items():
+        # Apply Filters to the Pit Data
+        if f_search and (f_search not in t and f_search not in p['team_name'].upper()): continue
+        if f_drive and p['drive_type'] != f_drive: continue
+        if f_turret and p.get('turret') != f_turret: continue
+        if f_indexer and p.get('indexer') != f_indexer: continue
+        if f_auto and p.get('auto') != f_auto: continue
+        if f_tele and p.get('teleop') != f_tele: continue
+
+        # Add them to the table even if they have 0 matches
+        team_stats[t] = {
+            'team_name': p['team_name'],
+            'total': 0,
+            'count': 0,
+            'avg': 0.0,
+            'drive_type': p['drive_type'],
+            'notes': p['notes']
+        }
+
+    # --- 3. LAYER ON MATCH DATA (If it exists) ---
     if os.path.exists(match_file):
         with open(match_file, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 t = row['team_num']
-                # Get pit info or empty defaults
-                p = pit_dict.get(t, {'team_name': row['scout'], 'drive_type': 'N/A',
-                                     'turret': '', 'indexer': '', 'auto': '', 'teleop': '', 'notes': 'N/A'})
 
-                # Apply All 6 Filters
-                if f_search and (f_search not in t and f_search not in p['team_name'].upper()): continue
-                if f_drive and p['drive_type'] != f_drive: continue
-                if f_turret and p.get('turret') != f_turret: continue
-                if f_indexer and p.get('indexer') != f_indexer: continue
-                if f_auto and p.get('auto') != f_auto: continue
-                if f_tele and p.get('teleop') != f_tele: continue
+                # Only add match stats if the team passed the Pit Filters above
+                if t in team_stats:
+                    team_stats[t]['total'] += int(row['points'])
+                    team_stats[t]['count'] += 1
+                    team_stats[t]['avg'] = round(team_stats[t]['total'] / team_stats[t]['count'], 1)
 
-                if t not in team_stats:
+                # Optional: If a team has matches but NO pit data,
+                # and no filters are active, you could add them here too.
+                elif not any([f_drive, f_turret, f_indexer, f_auto, f_tele]):
+                    if f_search and (f_search not in t and f_search not in row['scout'].upper()): continue
                     team_stats[t] = {
-                        'team_name': p['team_name'], 'total': 0, 'count': 0, 'avg': 0.0,
-                        'drive_type': p['drive_type'], 'notes': p['notes']
+                        'team_name': row['scout'], 'total': int(row['points']),
+                        'count': 1, 'avg': float(row['points']),
+                        'drive_type': 'UNKNOWN', 'notes': 'N/A'
                     }
 
-                team_stats[t]['total'] += int(row['points'])
-                team_stats[t]['count'] += 1
-                team_stats[t]['avg'] = round(team_stats[t]['total'] / team_stats[t]['count'], 1)
-
-    # --- 3. APPLY 6 SORTS ---
-    # Convert to list for easier sorting
+    # --- 4. APPLY SORTS ---
     stats_list = [(tid, data) for tid, data in team_stats.items()]
 
     if sort_by == 'team_asc':
