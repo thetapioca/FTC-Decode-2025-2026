@@ -180,9 +180,28 @@ analysis_page = base_style + nav_bar + '''
 <div class="container">
   <div class="card">
     <h2>BATTLE_ANALYTICS</h2>
+
+    <form method="GET" action="/data" style="display: flex; gap: 10px; margin-bottom: 20px;">
+      <input type="text" name="search" placeholder="SEARCH TEAM # OR NAME..." style="margin-bottom:0; flex: 2;">
+      <select name="drive" style="margin-bottom:0; flex: 1;">
+        <option value="">ALL DRIVE BASES</option>
+        <option value="Mecanum">MECANUM</option>
+        <option value="Tank">TANK</option>
+        <option value="Swerve">SWERVE</option>
+      </select>
+      <button type="submit" style="width: auto; padding: 0 20px;">FILTER</button>
+      <a href="/data" style="text-decoration:none;"><button type="button" style="background:#334155; width: auto; padding: 0 20px;">RESET</button></a>
+    </form>
+
     <table>
       <thead>
-        <tr><th>TEAM</th><th>AVG_SCORE</th><th>RUNS</th><th>BASE</th><th>INTEL</th></tr>
+        <tr>
+          <th><a href="/data?sort=team" style="color:inherit; text-decoration:none;">TEAM ↕</a></th>
+          <th><a href="/data?sort=avg" style="color:inherit; text-decoration:none;">AVG_SCORE ↕</a></th>
+          <th><a href="/data?sort=runs" style="color:inherit; text-decoration:none;">RUNS ↕</a></th>
+          <th>BASE</th>
+          <th>INTEL</th>
+        </tr>
       </thead>
       <tbody>
         {% for team, stats in results.items() %}
@@ -265,28 +284,53 @@ def match():
 @app.route('/data')
 def data_view():
     if 'user' not in session or 'team_num' not in session: return redirect('/login')
+
     pit_dict = get_pit_info()
     team_stats = {}
 
-    filter_team = request.args.get('filter_team')
-    for t, info in pit_dict.items():
-        if filter_team and t != filter_team: continue
-        team_stats[t] = {'team_name': info['team_name'], 'total': 0, 'count': 0, 'avg': 0.0, 'drive_type': info['drive_type'], 'notes': info['notes']}
+    # 1. Get filter/sort settings from the URL
+    sort_by = request.args.get('sort', 'avg')  # Default sort by average
+    filter_drive = request.args.get('drive', '')
+    search_query = request.args.get('search', '').upper()
 
+    # 2. Process Match Data
     if os.path.exists(match_file):
         with open(match_file, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 t = row['team_num']
+
+                # Apply Search Filter (Team Number or Name)
+                if search_query and (search_query not in t and search_query not in row['scout'].upper()):
+                    continue
+
                 if t not in team_stats:
-                    p_info = pit_dict.get(t, {'team_name':row['scout'], 'drive_type': 'UNKNOWN', 'notes': 'N/A'})
-                    team_stats[t] = {'team_name': p_info['team_name'], 'total': 0, 'count': 0, 'drive_type': p_info['drive_type'], 'notes': p_info['notes']}
+                    p_info = pit_dict.get(t, {'team_name': row['scout'], 'drive_type': 'UNKNOWN', 'notes': 'N/A'})
+
+                    # Apply Drive Base Filter
+                    if filter_drive and p_info['drive_type'] != filter_drive:
+                        continue
+
+                    team_stats[t] = {
+                        'team_name': p_info['team_name'],
+                        'total': 0, 'count': 0, 'avg': 0.0,
+                        'drive_type': p_info['drive_type'],
+                        'notes': p_info['notes']
+                    }
+
                 team_stats[t]['total'] += int(row['points'])
                 team_stats[t]['count'] += 1
                 team_stats[t]['avg'] = round(team_stats[t]['total'] / team_stats[t]['count'], 1)
 
-    sorted_stats = dict(sorted(team_stats.items(), key=lambda x: x[1].get('avg', 0), reverse=True))
-    return render_template_string(analysis_page, results=sorted_stats)
+    # 3. Handle Sorting
+    if sort_by == 'team':
+        sorted_stats = dict(sorted(team_stats.items(), key=lambda x: x[0]))
+    elif sort_by == 'runs':
+        sorted_stats = dict(sorted(team_stats.items(), key=lambda x: x[1]['count'], reverse=True))
+    else:  # Default: 'avg'
+        sorted_stats = dict(sorted(team_stats.items(), key=lambda x: x[1]['avg'], reverse=True))
+
+    return render_template_string(analysis_page, results=sorted_stats, current_sort=sort_by)
 
 
 @app.route('/login', methods=['GET', 'POST'])
