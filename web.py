@@ -68,7 +68,6 @@ base_style = '''
     width: 60px; 
     height: 6px; 
     border-radius: 2px; 
-    margin-top: 5px;
     border: 1px solid var(--border);
     margin-left: 10px;
     display: inline-block;
@@ -78,7 +77,6 @@ base_style = '''
     background: var(--accent); 
     height: 100%; 
     border-radius: 1px;
-    /* No shadows or glows */
   }
   .rank-badge { 
     background: #334155; 
@@ -262,10 +260,12 @@ analysis_page = base_style + nav_bar + '''
         {% for team, stats in results.items() %}
         <tr>
           <td><span class="rank-badge">{{ stats.team_name }}: {{team}}</span></td>
-          <td style="min-width: 120px;">
-            <span style="color:var(--accent); font-weight:bold;">{{ stats.avg }}</span>
-            <div class="progress-bg">
-                <div class="progress-fill" style="width: {{ stats.avg if stats.avg < 100 else 100 }}%"></div>
+          <td style="min-width: 140px;">
+            <div style="display: flex; align-items: center;">
+                <span style="color:var(--accent); font-weight:bold; min-width: 35px;">{{ stats.avg }}</span>
+                <div class="progress-bg">
+                    <div class="progress-fill" style="width: {{ stats.avg if stats.avg < 100 else 100 }}%"></div>
+                </div>
             </div>
           </td>
           <td>{{ stats.count }}</td>
