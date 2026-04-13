@@ -213,8 +213,8 @@ analysis_page = base_style + nav_bar + '''
       </select>
       <select name="auto">
         <option value="">AUTO: ALL</option>
-        {% for opt in ['scores', 'leaves', 'nothing'] %}
-        <option value="{{opt}}" {% if filters.get('auto') == opt %}selected{% endif %}>{{opt|upper}}</option>
+        {% for val, label in [('scores', 'SCORES'), ('leaves', 'LEAVES AREA'), ('nothing', 'DOES NOTHING')] %}
+        <option value="{{val}}" {% if filters.get('auto') == val %}selected{% endif %}>{{label}}</option>
         {% endfor %}
       </select>
       <select name="turret">
@@ -229,8 +229,9 @@ analysis_page = base_style + nav_bar + '''
       </select>
       <select name="tele">
         <option value="">TELEOP: ALL</option>
-        <option value="patterns" {% if filters.get('tele') == 'patterns' %}selected{% endif %}>PATTERNS</option>
+        <option value="patterns" {% if filters.get('tele') == 'patterns' %}selected{% endif %}>SCORES PATTERNS</option>
         <option value="scores" {% if filters.get('tele') == 'scores' %}selected{% endif %}>SCORES</option>
+        <option value="nothing" {% if filters.get('tele') == 'nothing' %}selected{% endif %}>SCORES</option>
       </select>
       <input type="hidden" name="sort" value="{{ filters.get('sort', 'score_desc') }}">
       <button type="submit">APPLY FILTERS</button>
