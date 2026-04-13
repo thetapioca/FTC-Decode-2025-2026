@@ -70,6 +70,9 @@ base_style = '''
     border-radius: 2px; 
     margin-top: 5px;
     border: 1px solid var(--border);
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: middle;
   }
   .progress-fill { 
     background: var(--accent); 
