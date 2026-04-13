@@ -62,9 +62,29 @@ base_style = '''
   th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
   td { padding: 18px 15px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); }
 
-  .progress-bg { background: #0f172a; width: 80px; height: 8px; border-radius: 4px; display: inline-block; vertical-align: middle; }
-  .progress-fill { background: var(--accent); height: 100%; border-radius: 4px; box-shadow: 0 0 10px var(--accent); }
-  .rank-badge { background: #334155; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: var(--accent); }
+  .progress-bg { 
+    background: #0f172a; 
+    width: 100%; 
+    height: 8px; 
+    border-radius: 2px; 
+    margin-top: 5px;
+    border: 1px solid var(--border);
+  }
+  .progress-fill { 
+    background: var(--accent); 
+    height: 100%; 
+    border-radius: 1px;
+    /* No shadows or glows */
+  }
+  .rank-badge { 
+    background: #334155; 
+    padding: 4px 10px; 
+    border-radius: 4px; 
+    font-weight: 600; 
+    color: white; /* Plain white text */
+    border: 1px solid var(--border);
+    display: inline-block;
+  }
 </style>
 '''
 
