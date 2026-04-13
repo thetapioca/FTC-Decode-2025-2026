@@ -290,6 +290,8 @@ def get_pit_info():
             reader.fieldnames = [name.strip() for name in reader.fieldnames]
             for row in reader:
                 t = row.get('team_num')
+                raw_notes = row.get('notes', '')
+                clean_notes = raw_notes if raw_notes.strip() else 'N/A'
                 if t:
                     info[t] = {
                         'team_name': row.get('scout', 'UNKNOWN'),
@@ -298,7 +300,7 @@ def get_pit_info():
                         'indexer': row.get('indexer', ''),
                         'auto': row.get('auto', ''),
                         'teleop': row.get('teleop', ''),
-                        'notes': row.get('notes', 'N/A')
+                        'notes': clean_notes
                     }
     return info
 
