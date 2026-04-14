@@ -202,39 +202,39 @@ match_form = base_style + nav_bar + '''
 analysis_page = base_style + nav_bar + '''
 <div class="container">
   <div class="card">
-    <h2 style="letter-spacing:2px;">ALLIANCE_DATABASE</h2>
-    <form method="GET" action="/data" style="display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 10px; margin-bottom: 30px;">
-      <input type="text" name="search" value="{{ filters.get('search', '') }}" placeholder="SEARCH NAME/NUM..." style="margin-bottom:0;">
-      <select name="drive">
+    <h2 style="letter-spacing:2px;">ALLIANCE DATABASEEE</h2>
+    <form method="GET" action="/data" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px;">
+      <input type="text" name="search" value="{{ filters.get('search', '') }}" placeholder="SEARCH NAME/NUM..." style="height: 50px; box-sizing: border-box; grid-column: span 1;">
+      <select name="drive" style="height: 50px; box-sizing: border-box;">
         <option value="">DRIVE: ALL</option>
         {% for opt in ['Mecanum', 'Tank', 'Swerve'] %}
         <option value="{{opt}}" {% if filters.get('drive') == opt %}selected{% endif %}>{{opt|upper}}</option>
         {% endfor %}
       </select>
-      <select name="auto">
+      <select name="auto" style="height: 50px; box-sizing: border-box;">
         <option value="">AUTO: ALL</option>
         {% for val, label in [('scores', 'SCORES'), ('leaves', 'LEAVES AREA'), ('nothing', 'DOES NOTHING')] %}
         <option value="{{val}}" {% if filters.get('auto') == val %}selected{% endif %}>{{label}}</option>
         {% endfor %}
       </select>
-      <select name="turret">
+      <select name="turret" style="height: 50px; box-sizing: border-box; grid-column: 1;">
         <option value="">TURRET: ALL</option>
         <option value="yes" {% if filters.get('turret') == 'yes' %}selected{% endif %}>HAS TURRET</option>
         <option value="no" {% if filters.get('turret') == 'no' %}selected{% endif %}>NO TURRET</option>
       </select>
-      <select name="indexer">
+      <select name="indexer" style="height: 50px; box-sizing: border-box;">
         <option value="">INDEXER: ALL</option>
         <option value="yes" {% if filters.get('indexer') == 'yes' %}selected{% endif %}>HAS INDEXER</option>
         <option value="no" {% if filters.get('indexer') == 'no' %}selected{% endif %}>NO INDEXER</option>
       </select>
-      <select name="tele">
+      <select name="tele" style="height: 50px; box-sizing: border-box;">
         <option value="">TELEOP: ALL</option>
         <option value="patterns" {% if filters.get('tele') == 'patterns' %}selected{% endif %}>SCORES PATTERNS</option>
         <option value="scores" {% if filters.get('tele') == 'scores' %}selected{% endif %}>SCORES</option>
         <option value="nothing" {% if filters.get('tele') == 'nothing' %}selected{% endif %}>SCORES</option>
       </select>
-      <input type="hidden" name="sort" value="{{ filters.get('sort', 'score_desc') }}">
-      <button type="submit">APPLY FILTERS</button>
+      <input type="hidden" name="sort" value="{{ filters.get('sort', 'score_desc') }}" style="height: 50px; box-sizing: border-box;">
+      <button type="submit" style="height: 50px; box-sizing: border-box; grid-column: span 3;">APPLY FILTERS</button>
       <a href="/data" style="grid-column: span 4; text-align:center; color:var(--text-muted); font-size:12px; text-decoration:none;">RESET ALL</a>
     </form>
 
