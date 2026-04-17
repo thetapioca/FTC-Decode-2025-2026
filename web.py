@@ -216,7 +216,7 @@ match_form = base_style + nav_bar + '''
       <select name="parking">
         <option value="Fully">FULLY</option>
         <option value="Partially">PARTIALLY</option>
-        <option value="No Parking">NO_PARKING</option>
+        <option value="No Parking">NO PARKING</option>
       </select>
       <label>MAXIMUM FOUL TYPE INCURRED</label>
       <select name="fouls">
