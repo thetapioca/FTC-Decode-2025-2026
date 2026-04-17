@@ -37,6 +37,8 @@ base_style = '''
   nav { 
     background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); padding: 0 30px; display: flex; 
     height: 70px; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    overflow-x: auto;
+    white-space: nowrap;
   }
   nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; margin-right: 25px;}
   nav a:hover { color: var(--accent); }
@@ -87,6 +89,27 @@ base_style = '''
     color: white; /* Plain white text */
     border: 1px solid var(--border);
     display: inline-block;
+  }
+  @media (max-width: 768px) {
+    .container { padding: 20px 10px; }
+    
+    form[style*="grid-template-columns"] {
+      grid-template-columns: 1fr !important; 
+    }
+
+    form[style*="grid-template-columns"] > * {
+      grid-column: span 1 !important;
+    }
+
+    div[style*="grid-template-columns"] {
+      grid-template-columns: 1fr !important;
+    }
+    
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
   }
 </style>
 '''
