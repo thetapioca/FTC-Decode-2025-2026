@@ -90,7 +90,21 @@ base_style = '''
     border: 1px solid var(--border);
     display: inline-block;
   }
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+  }
   @media (max-width: 768px) {
+  /* This makes the Specs and Match History stack on top of each other */
+    .profile-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* This makes the Match History table scrollable so it doesn't leak off screen */
+    .profile-grid .card {
+      overflow-x: auto;
+    }
     .container { padding: 20px 10px; }
     
     form[style*="grid-template-columns"] {
@@ -314,7 +328,7 @@ profile_page = base_style + nav_bar + '''
     <a href="/data" style="text-decoration:none;"><button style="width:auto; padding: 10px 20px; background:#334155;">BACK TO DATABASE</button></a>
   </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+  <div class="profile-grid">
     <div class="card">
       <h3 style="margin-top:0; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 12px; letter-spacing: 2px;">ROBOT DETAILS</h3>
       <div style="margin-bottom: 15px;"><label>DRIVE BASE</label> {{pit.drive_type|upper}}</div>
