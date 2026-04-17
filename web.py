@@ -268,7 +268,7 @@ analysis_page = base_style + nav_bar + '''
         <option value="">TELEOP: ALL</option>
         <option value="patterns" {% if filters.get('tele') == 'patterns' %}selected{% endif %}>SCORES PATTERNS</option>
         <option value="scores" {% if filters.get('tele') == 'scores' %}selected{% endif %}>SCORES</option>
-        <option value="nothing" {% if filters.get('tele') == 'nothing' %}selected{% endif %}>SCORES</option>
+        <option value="nothing" {% if filters.get('tele') == 'nothing' %}selected{% endif %}>DOES NOTHING</option>
       </select>
       <input type="hidden" name="sort" value="{{ filters.get('sort', 'score_desc') }}" style="height: 50px; box-sizing: border-box;">
       <button type="submit" style="height: 50px; box-sizing: border-box; grid-column: 2;">APPLY FILTERS</button>
