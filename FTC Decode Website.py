@@ -1,21 +1,15 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
 import csv
 import os
-
-'''INFORMATION: to edit the table go to analysis page and add more categories,
-also go to get pit info
-also go to data view this is where everything is handled
-we just need to add new categories'''
-
+#i
 app = Flask(__name__)
 app.secret_key = "ftc_championship_key"
 
-# File setup
+# --- File Setup ---
 user_file = 'users.csv'
 pit_file = 'pit_data.csv'
 match_file = 'match_data.csv'
 
-# Initialize files
 for f_path, headers in [
   (user_file, ['username', 'password']),
   (pit_file, ['scout', 'team_num', 'drive_type', 'notes']),
@@ -25,49 +19,84 @@ for f_path, headers in [
     with open(f_path, 'w', newline='') as f:
       csv.writer(f).writerow(headers)
 
-# --- Design ---
+# --- Modern UI Theme (CSS) ---
 base_style = '''
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  body { font-family: sans-serif; margin: 0; background: #f4f7f9; color: #333; }
-  nav { background: #2c3e50; padding: 15px; display: flex; gap: 15px; justify-content: center; }
-  nav a { color: white; text-decoration: none; font-weight: bold; }
-  .container { padding: 20px; max-width: 800px; margin: auto; }
-  .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-  input, select, button { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 4px; }
-  button { background: #27ae60; color: white; border: none; cursor: pointer; font-size: 16px; }
-  button:hover { background: #219150; }
+  :root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --nav-bg: #0f172a;
+    --border: #e2e8f0;
+  }
+  body { 
+    font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text-main); line-height: 1.6;
+  }
+  nav { 
+    background: var(--nav-bg); padding: 0 20px; display: flex; gap: 25px; justify-content: center; 
+    height: 60px; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  }
+  nav a { color: #94a3b8; text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; }
+  nav a:hover { color: white; }
+  .container { padding: 40px 20px; max-width: 900px; margin: auto; }
+  .card { 
+    background: var(--card-bg); padding: 32px; border-radius: 12px; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 24px; 
+  }
+  input, select, textarea { 
+    width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--border); 
+    border-radius: 8px; box-sizing: border-box; font-size: 16px;
+  }
+  button { 
+    background: var(--primary); color: white; border: none; padding: 14px; 
+    border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%;
+  }
+  button:hover { background: var(--primary-hover); }
+  .table-container { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
   table { width: 100%; border-collapse: collapse; background: white; }
-  th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-  th { background: #ecf0f1; }
+  th { background: #f1f5f9; color: var(--text-muted); font-size: 12px; text-transform: uppercase; padding: 16px; text-align: left; }
+  td { padding: 16px; border-top: 1px solid var(--border); }
+  .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #e0e7ff; color: #4338ca; }
 </style>
 '''
 
 nav_bar = '''
 <nav>
-  <a href="/">Home</a>
-  <a href="/pit">Pit Scout</a>
-  <a href="/match">Match Scout</a>
-  <a href="/data">Analysis</a>
-  <a href="/logout">Logout</a>
+  <div style="display: flex; gap: 25px;">
+    <a href="/">Home</a>
+    <a href="/pit">Pit Scout</a>
+    <a href="/match">Match Scout</a>
+    <a href="/data">Analysis</a>
+  </div>
+  <div style="margin-left: auto;">
+    <a href="/logout" style="color: #ef4444;">Logout</a>
+  </div>
 </nav>
 '''
 
-# --- Pages ---
+# --- Page Templates ---
 
 home_page = base_style + nav_bar + '''
 <div class="container">
   <div class="card">
-    <h1>Welcome to FTC Scouting</h1>
-    <p>Logged in as: <strong>{{ user }}</strong></p>
-    <hr>
-    <h3>How it Works</h3>
-    <ul>
-      <li><strong>Pit Scouting:</strong> meep </li>
-      <li><strong>Match Scouting:</strong> beep</li>
-      <li><strong>Analysis:</strong> boop</li>
-      <li><strong>Average Points</strong> meep.</li>
-    </ul>
+    <h1>FTC Scouting Dashboard</h1>
+    <p style="color: var(--text-muted);">Welcome back, <strong>{{ user }}</strong></p>
+    <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="padding: 15px; border: 1px solid var(--border); border-radius: 8px;">
+            <h4 style="margin: 0;">Pit Scouting</h4>
+            <p style="font-size: 13px; color: var(--text-muted);">Record robot specs and hardware.</p>
+        </div>
+        <div style="padding: 15px; border: 1px solid var(--border); border-radius: 8px;">
+            <h4 style="margin: 0;">Analysis</h4>
+            <p style="font-size: 13px; color: var(--text-muted);">View averages and performance.</p>
+        </div>
+    </div>
   </div>
 </div>
 '''
@@ -75,17 +104,18 @@ home_page = base_style + nav_bar + '''
 pit_form = base_style + nav_bar + '''
 <div class="container">
   <div class="card">
-    <h2>New Pit Report</h2>
+    <h2>Pit Report</h2>
     <form method="POST">
-      <input type="number" name="team_num" placeholder="Team Number" required>
-      <label>Drivetrain Type:</label>
+      <label>Drivetrain Type</label>
       <select name="drive_type">
         <option value="Mecanum">Mecanum</option>
         <option value="Tank">Tank</option>
         <option value="Swerve">Swerve</option>
+        <option value="Other">Other</option>
       </select>
-      <input type="text" name="notes" placeholder="General Robot Description">
-      <button type="submit">Save Pit Data</button>
+      <label>Robot Notes</label>
+      <textarea name="notes" placeholder="Strengths, weaknesses, etc." rows="4" style="width:100%; border-radius:8px; border:1px solid var(--border); padding:10px;"></textarea>
+      <button type="submit">Submit Report</button>
     </form>
   </div>
 </div>
@@ -94,174 +124,116 @@ pit_form = base_style + nav_bar + '''
 match_form = base_style + nav_bar + '''
 <div class="container">
   <div class="card">
-    <h2>New Match Report</h2>
+    <h2>Match Performance</h2>
     <form method="POST">
       <input type="number" name="team_num" placeholder="Team Number" required>
       <input type="number" name="match_num" placeholder="Match Number" required>
-      <input type="number" name="points" placeholder="Total Points Scored" required>
+      <input type="number" name="points" placeholder="Points Scored" required>
       <button type="submit">Save Match Data</button>
     </form>
   </div>
 </div>
 '''
 
-#THIS IS THE TABLE AND HOW TO ADD NEW COLUMNS
 analysis_page = base_style + nav_bar + '''
 <div class="container">
   <div class="card">
-    <h2>Team Rankings & Analysis</h2>
-    <form method="GET" action="/data">
-      <input type="number" name="filter_team" placeholder="Filter by Team Number...">
-      <button type="submit" style="background:#3498db">Apply Filter</button>
-      <a href="/data" style="font-size: 12px;">Clear Filter</a>
+    <h2>Team Rankings</h2>
+    <form method="GET" action="/data" style="display: flex; gap: 10px; margin-bottom: 20px;">
+      <input type="number" name="filter_team" placeholder="Filter by Team #" style="margin-bottom:0;">
+      <button type="submit" style="width: auto; padding: 0 20px;">Filter</button>
     </form>
-    <br>
-    <table>
-      <tr>
-        <th>Team #</th>
-        <th>Avg Points</th>
-        <th>Total Matches</th>
-        <th>Drive Type</th>
-        <th>Notes</th>
-      </tr>
-      {% for team, stats in results.items() %}
-      <tr>
-        <td>{{ team }}</td>
-        <td>{{ stats.avg }}</td>
-        <td>{{ stats.count }}</td>
-        <td>{{ stats.drive }}</td>
-        <td>{{ stats.notes }}</td>
-      </tr>
-      {% endfor %}
-    </table>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Team #</th>
+            <th>Avg Points</th>
+            <th>Matches</th>
+            <th>Drive</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for team, stats in results.items() %}
+          <tr>
+            <td><strong>{{ team }}</strong></td>
+            <td><span class="badge">{{ stats.avg }}</span></td>
+            <td>{{ stats.count }}</td>
+            <td>{{ stats.drive_type }}</td>
+            <td style="color: var(--text-muted); font-size: 13px;">{{ stats.notes }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 '''
 
-
-# --- Logic ---
+# --- Helper Logic ---
 
 def get_pit_info():
   info = {}
-  with open(pit_file, 'r') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      info[row['team_num']] = {
-      'drive_type':row['drive_type'],
-      'notes':row['notes']
-      }
-
+  if os.path.exists(pit_file):
+    with open(pit_file, 'r') as f:
+      reader = csv.DictReader(f)
+      for row in reader:
+        info[row['team_num']] = {'drive_type':row['drive_type'], 'notes':row['notes']}
   return info
 
-def get_match_info():
-  info = {}
-  with open(match_file, 'r') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      info[row['team_num']] = {
-      'match_num':row['match_num'],
-      'points':row['points']}
-  return info
-
+# --- Routes ---
 
 @app.route('/')
 def home():
   if 'user' not in session: return redirect('/login')
   return render_template_string(home_page, user=session['user'])
 
-
 @app.route('/pit', methods=['GET', 'POST'])
 def pit():
   if 'user' not in session: return redirect('/login')
   if request.method == 'POST':
     with open(pit_file, 'a', newline='') as f:
-      csv.writer(f).writerow(
-        [session['user'], request.form['team_num'], request.form['drive_type'], request.form['notes']])
-    return redirect('/')
+      csv.writer(f).writerow([session['user'], request.form['team_num'], request.form['drive_type'], request.form['notes']])
+    return redirect('/data')
   return render_template_string(pit_form)
-
 
 @app.route('/match', methods=['GET', 'POST'])
 def match():
   if 'user' not in session: return redirect('/login')
   if request.method == 'POST':
     with open(match_file, 'a', newline='') as f:
-      csv.writer(f).writerow(
-        [session['user'], request.form['team_num'], request.form['match_num'], request.form['points']])
-    return redirect('/')
+      csv.writer(f).writerow([session['user'], request.form['team_num'], request.form['match_num'], request.form['points']])
+    return redirect('/data')
   return render_template_string(match_form)
 
-
-@app.route('/data') # displaying table
+@app.route('/data')
 def data_view():
   if 'user' not in session: return redirect('/login')
-
   filter_team = request.args.get('filter_team')
   pit_dict = get_pit_info()
   team_stats = {}
 
+  # Process pit info first
   for t, info in pit_dict.items():
     if filter_team and t != filter_team: continue
-    team_stats[t] = {
-      'total': 0,
-      'count': 0,
-      'avg':0.0,
-      'drive': info['drive_type'],
-      'notes': info['notes']
-    }
+    team_stats[t] = {'total': 0, 'count': 0, 'avg': 0.0, 'drive_type': info['drive_type'], 'notes': info['notes']}
 
-  # 2. NOW open the match file
-  with open(match_file, 'r') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      t = row['team_num']
-
-      # If they are already on the whiteboard (from the Pit info), we just update
-      if t in team_stats:
+  # Merge match info
+  if os.path.exists(match_file):
+    with open(match_file, 'r') as f:
+      reader = csv.DictReader(f)
+      for row in reader:
+        t = row['team_num']
+        if filter_team and t != filter_team: continue
+        if t not in team_stats:
+          team_stats[t] = {'total': 0, 'count': 0, 'avg': 0, 'drive_type': 'Unknown', 'notes': 'N/A'}
         team_stats[t]['total'] += int(row['points'])
         team_stats[t]['count'] += 1
         team_stats[t]['avg'] = round(team_stats[t]['total'] / team_stats[t]['count'], 1)
-      else:
-        # If they AREN'T on the board (Match only), add them now as 'Unknown'
-        team_stats[t] = {
-          'total': int(row['points']),
-          'count': 1,
-          'avg': int(row['points']),
-          'drive': 'Unknown',
-          'notes': 'N/A'
-        }
-  return render_template_string(analysis_page, results=team_stats)
-
-
-#OLD DATA_VIEW
-'''
-def data_view():
-  if 'user' not in session: return redirect('/login')
-
-  filter_team = request.args.get('filter_team')
-  pit_dict = get_pit_info()
-  team_stats = {}
-
-  with open(match_file, 'r') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      t = row['team_num']
-      if filter_team and t != filter_team: continue
-
-      p = int(row['points'])
-      if t not in team_stats:
-        pitinf = pit_dict.get(t, {'drive_type':'Unknown', 'notes':'No Notes'})
-        team_stats[t] = {'total': 0, 'count': 0, 'drive':pitinf['drive_type'], 'notes':pitinf['notes']}
-
-      team_stats[t]['total'] += p
-      team_stats[t]['count'] += 1
-      team_stats[t]['avg'] = round(team_stats[t]['total'] / team_stats[t]['count'], 1)
 
   return render_template_string(analysis_page, results=team_stats)
-'''
 
-
-# (Login/Register/Logout logic stays same as previous)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   if request.method == 'POST':
@@ -272,9 +244,7 @@ def login():
           session['user'] = u
           return redirect('/')
     return "Invalid login"
-  return render_template_string(
-    base_style + '<div class="container"><div class="card"><h2>Login</h2><form method="POST"><input name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><button>Login</button></form><a href="/register">Register</a></div></div>')
-
+  return render_template_string(base_style + '<div class="container"><div class="card"><h2>Login</h2><form method="POST"><input name="username" placeholder="Team Name"><input name="password" placeholder="Team Number"><button>Login</button></form><a href="/register" style="font-size:13px; color:var(--text-muted);">Create Account</a></div></div>')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -282,15 +252,12 @@ def register():
     with open(user_file, 'a', newline='') as f:
       csv.writer(f).writerow([request.form['username'], request.form['password']])
     return redirect('/login')
-  return render_template_string(
-    base_style + '<div class="container"><div class="card"><h2>Register</h2><form method="POST"><input name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><button>Create Account</button></form></div></div>')
-
+  return render_template_string(base_style + '<div class="container"><div class="card"><h2>Register</h2><form method="POST"><input name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><button>Create Account</button></form></div></div>')
 
 @app.route('/logout')
 def logout():
   session.clear()
   return redirect('/login')
-
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=5000, debug=True)
