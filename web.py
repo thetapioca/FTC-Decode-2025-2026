@@ -22,6 +22,7 @@ for f_path, headers in [
 # --- THE CYBER STYLE ---
 # This block MUST be at the top of every page string
 base_style = '''
+<title>{{ page_title }} | SQUID NETWORK</title><link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -94,7 +95,7 @@ nav_bar = '''
 <nav>
   <a href="/" style="font-size: 20px; color: white; margin-right: 40px;">SQUID // <span style="color:var(--accent)">NETWORK</span></a>
   <a href="/">DASHBOARD</a> <a href="/pit">ABOUT MY ROBOT</a> <a href="/match">MY MATCHES</a> <a href="/data">ANALYSIS</a>
-  <a style="margin-left: auto; color: #f87171;" href="/logout">LOGOUT</a>
+  <a style="margin-left: auto; color: #f87171;" href="/logout">LOG OUT</a>
 </nav>
 '''
 
@@ -102,11 +103,11 @@ nav_bar = '''
 
 home_page = base_style + nav_bar + '''
 <div class="container">
-  <h1>SYSTEM DASHBOARD</h1>
+  <h1>DASHBOARD</h1>
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
     <div class="card">
-      <h3 style="margin-top:0">Active Session</h3>
-      <p style="color: var(--text-muted)">User: <span style="color:var(--accent)">{{ user }}</span></p>
+      <h3 style="margin-top:0">Current user:</h3>
+      <p style="color: var(--text-muted)">Team Name: <span style="color:var(--accent)">{{ user }}</span></p>
       <p style="color: var(--text-muted)">Team Number: <span style="color:var(--accent)">{{ team_num }}</span></p>
     </div>
     <div class="card">
@@ -118,8 +119,8 @@ home_page = base_style + nav_bar + '''
     </div>
   </div>
   <div class="card" style="margin-top: 20px;">
-    <h3>Fleet Overview</h3>
-    <p style="color: var(--text-muted);">Welcome to Squid Network. Track your robot data here.</p>
+    <h3>Overview</h3>
+    <p style="color: var(--text-muted);">Welcome to Squid Network. Here, you can enter details of your robot and access information about other robots.</p>
   </div>
 </div>
 '''
@@ -198,11 +199,10 @@ match_form = base_style + nav_bar + '''
 </div>
 '''
 
-# Look at the DRIVE <th> specifically - I fixed the url_for calls here
 analysis_page = base_style + nav_bar + '''
 <div class="container">
   <div class="card">
-    <h2 style="letter-spacing:2px;">ALLIANCE DATABASEEE</h2>
+    <h2 style="letter-spacing:2px;">ALLIANCE DATABASE</h2>
     <form method="GET" action="/data" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px;">
       <input type="text" name="search" value="{{ filters.get('search', '') }}" placeholder="SEARCH NAME/NUM..." style="height: 50px; box-sizing: border-box; grid-column: span 1;">
       <select name="drive" style="height: 50px; box-sizing: border-box;">
@@ -234,7 +234,7 @@ analysis_page = base_style + nav_bar + '''
         <option value="nothing" {% if filters.get('tele') == 'nothing' %}selected{% endif %}>SCORES</option>
       </select>
       <input type="hidden" name="sort" value="{{ filters.get('sort', 'score_desc') }}" style="height: 50px; box-sizing: border-box;">
-      <button type="submit" style="height: 50px; box-sizing: border-box; grid-column: span 3;">APPLY FILTERS</button>
+      <button type="submit" style="height: 50px; box-sizing: border-box; grid-column: 2;">APPLY FILTERS</button>
       <a href="/data" style="grid-column: span 4; text-align:center; color:var(--text-muted); font-size:12px; text-decoration:none;">RESET ALL</a>
     </form>
 
@@ -293,7 +293,7 @@ profile_page = base_style + nav_bar + '''
 
   <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
     <div class="card">
-      <h3 style="margin-top:0; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 12px; letter-spacing: 2px;">ROBOT_SPECS</h3>
+      <h3 style="margin-top:0; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 12px; letter-spacing: 2px;">ROBOT DETAILS</h3>
       <div style="margin-bottom: 15px;"><label>DRIVE BASE</label> {{pit.drive_type|upper}}</div>
       <div style="margin-bottom: 15px;"><label>TURRET</label> {{pit.turret|upper}}</div>
       <div style="margin-bottom: 15px;"><label>INDEXER</label> {{pit.indexer|upper}}</div>
@@ -304,7 +304,7 @@ profile_page = base_style + nav_bar + '''
     </div>
 
     <div class="card">
-      <h3 style="margin-top:0; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 12px; letter-spacing: 2px;">MATCH_HISTORY</h3>
+      <h3 style="margin-top:0; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 12px; letter-spacing: 2px;">MATCH HISTORY</h3>
       <table>
         <thead>
           <tr>
@@ -347,7 +347,7 @@ def get_pit_info():
                 if t:
                     info[t] = {
                         'team_name': row.get('scout', 'UNKNOWN'),
-                        'drive_type': row.get('drive_type', 'UNKNOWN'),
+                        'drive_type': row.get('drive_type', 'unknown'),
                         'turret': row.get('turret', ''),
                         'indexer': row.get('indexer', ''),
                         'auto': row.get('auto', ''),
@@ -360,7 +360,7 @@ def get_pit_info():
 @app.route('/')
 def home():
     if 'user' not in session or 'team_num' not in session: return redirect('/login')
-    return render_template_string(home_page, user=session['user'], team_num=session['team_num'])
+    return render_template_string(home_page, user=session['user'], team_num=session['team_num'], page_title = "DASHBOARD")
 
 
 @app.route('/pit', methods=['GET', 'POST'])
@@ -378,7 +378,7 @@ def pit():
                 request.form['notes']
             ])
         return redirect('/data')
-    return render_template_string(pit_form)
+    return render_template_string(pit_form, page_title = "ROBOT DATA")
 
 
 @app.route('/match', methods=['GET', 'POST'])
@@ -392,7 +392,7 @@ def match():
                 request.form['balls'], request.form['match_notes']
             ])
         return redirect('/data')
-    return render_template_string(match_form)
+    return render_template_string(match_form, page_title = "MATCH DATA")
 
 
 @app.route('/data')
@@ -470,7 +470,7 @@ def data_view():
     elif sort_by == 'drive_desc':
         stats_list.sort(key=lambda x: x[1]['drive_type'], reverse=True)
 
-    return render_template_string(analysis_page, results=dict(stats_list), filters=request.args)
+    return render_template_string(analysis_page, results=dict(stats_list), filters=request.args, page_title = "ANALYSIS")
 
 
 @app.route('/robot/<team_num>')
@@ -495,7 +495,7 @@ def robot_profile(team_num):
 
         robot_pit = {
             'team_name': found_name,
-            'drive_type': 'NOT RECORDED',
+            'drive_type': '?',
             'turret': '?', 'indexer': '?', 'auto': '?', 'teleop': '?',
             'notes': 'No pit notes recorded yet.'
         }
@@ -511,7 +511,7 @@ def robot_profile(team_num):
 
     robot_matches.reverse()  # Show newest matches first
 
-    return render_template_string(profile_page, team_num=team_num, pit=robot_pit, matches=robot_matches)
+    return render_template_string(profile_page, team_num=team_num, pit=robot_pit, matches=robot_matches, page_title = team_num)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -565,3 +565,9 @@ def logout():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+from flask import send_from_directory
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')

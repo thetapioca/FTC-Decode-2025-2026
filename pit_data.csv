@@ -1,3 +1,5 @@
 scout,team_num,drive_type, turret, indexer, auto, teleop, notes
 TEAM1,11111,Mecanum,yes,yes,nothing,nothing,
 TEAM3,33333,Swerve,no,no,nothing,nothing,very fast and good on defence
+TEST,12345,Mecanum,yes,yes,nothing,nothing,
+TEST,12345,Mecanum,yes,yes,nothing,nothing,
