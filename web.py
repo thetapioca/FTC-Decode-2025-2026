@@ -12,7 +12,7 @@ match_file = 'match_data.csv'
 
 for f_path, headers in [
     (user_file, ['username', 'password']),
-    (pit_file, ['scout', 'team_num', 'drive_type', 'turret', 'indexer', 'auto', 'teleop', 'notes']),
+    (pit_file, ['scout', 'team_num', 'drive_type', 'turret', 'indexer', 'auto', 'autoscore', 'teleop', 'notes']),
     (match_file, ['scout', 'team_num', 'match_num', 'points', 'parking', 'fouls', 'patterns', 'balls', 'match_notes'])
 ]:
     if not os.path.exists(f_path):
@@ -189,6 +189,8 @@ pit_form = base_style + nav_bar + '''
         <option value="leaves">LEAVES AREA</option>
         <option value="scores">SCORES</option>
       </select>
+      <label>BALLS ABLE TO SCORE IN AUTO</label>
+      <input type='number' name='autoscore'>
       <label>TELEOP</label>
       <select name="teleop">
         <option value="nothing">NO SCORING</option>
@@ -231,6 +233,7 @@ match_form = base_style + nav_bar + '''
       <label>MATCH OBSERVATIONS</label>
       <textarea name="match_notes" rows="3"></textarea>
       <button type="submit">SAVE MATCH DATA</button>
+      
     </form>
   </div>
 </div>
@@ -335,6 +338,7 @@ profile_page = base_style + nav_bar + '''
       <div style="margin-bottom: 15px;"><label>TURRET</label> {{pit.turret|upper}}</div>
       <div style="margin-bottom: 15px;"><label>INDEXER</label> {{pit.indexer|upper}}</div>
       <div style="margin-bottom: 15px;"><label>AUTO</label> {{pit.auto|upper}}</div>
+      <div style="margin-bottom: 15px;"><label>AUTO BALL CAPACITY</label> {{pit.autoscore|upper}}</div>
       <div style="margin-bottom: 15px;"><label>TELEOP</label> {{pit.teleop|upper}}</div>
       <label>MASTER NOTES</label>
       <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">{{pit.notes}}</p>
@@ -388,6 +392,7 @@ def get_pit_info():
                         'turret': row.get('turret', ''),
                         'indexer': row.get('indexer', ''),
                         'auto': row.get('auto', ''),
+                        'autoscore': row.get('autoscore', '0'),
                         'teleop': row.get('teleop', ''),
                         'notes': clean_notes
                     }
@@ -411,6 +416,7 @@ def pit():
                 request.form['turret'],
                 request.form['indexer'],
                 request.form['auto'],
+                request.form['autoscore'],
                 request.form['teleop'],
                 request.form['notes']
             ])
