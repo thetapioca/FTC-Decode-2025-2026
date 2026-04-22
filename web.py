@@ -2,6 +2,17 @@ from flask import Flask, render_template_string, request, redirect, url_for, ses
 import csv
 import os
 
+# 1. Define the safe path
+# On Azure, 'HOME' is permanent. On your PC, it will just use the current folder.
+base_path = os.environ.get('HOME', '.')
+PIT_DATA_FILE = os.path.join(base_path, 'pit_data.csv')
+MATCH_DATA_FILE = os.path.join(base_path, 'match_data.csv')
+# 2. Use DATA_FILE when saving
+# Example of how your saving function should look:
+def save_data(data_row):
+    with open(DATA_FILE, 'a') as f:
+        f.write(data_row + '\n')
+
 app = Flask(__name__)
 app.secret_key = "ftc_championship_key"
 
@@ -290,10 +301,11 @@ analysis_page = base_style + nav_bar + '''
             <a href="{{ url_for('data_view', **dict(filters, sort='score_desc')) }}">▼</a>
           </th>
           <th>RUNS</th>
-          <th>DRIVE 
-            <a href="{{ url_for('data_view', **dict(filters, sort='drive_asc')) }}">▲</a> 
-            <a href="{{ url_for('data_view', **dict(filters, sort='drive_desc')) }}">▼</a>
+          <th>AUTO 
+            <a href="{{ url_for('data_view', **dict(filters, sort='auto_asc')) }}">▲</a> 
+            <a href="{{ url_for('data_view', **dict(filters, sort='auto_desc')) }}">▼</a>
           </th>
+
           <th>INTEL</th>
         </tr>
       </thead>
@@ -314,7 +326,7 @@ analysis_page = base_style + nav_bar + '''
             </div>
           </td>
           <td>{{ stats.count }}</td>
-          <td><code>{{ stats.drive_type }}</code></td>
+          <td><code>{{ stats.auto|upper }}</code></td>
           <td style="font-size: 11px; color: var(--text-muted);">{{ stats.notes }}</td>
         </tr>
         {% endfor %}
@@ -470,7 +482,7 @@ def data_view():
             'total': 0,
             'count': 0,
             'avg': 0.0,
-            'drive_type': p['drive_type'],
+            'auto': p.get('auto', 'unknown'),
             'notes': p['notes']
         }
 
@@ -508,10 +520,10 @@ def data_view():
         stats_list.sort(key=lambda x: x[1]['avg'])
     elif sort_by == 'score_desc':
         stats_list.sort(key=lambda x: x[1]['avg'], reverse=True)
-    elif sort_by == 'drive_asc':
-        stats_list.sort(key=lambda x: x[1]['drive_type'])
-    elif sort_by == 'drive_desc':
-        stats_list.sort(key=lambda x: x[1]['drive_type'], reverse=True)
+    elif sort_by == 'auto_asc':
+        stats_list.sort(key=lambda x: x[1]['auto'])
+    elif sort_by == 'auto_desc':
+        stats_list.sort(key=lambda x: x[1]['auto'], reverse=True)
 
     return render_template_string(analysis_page, results=dict(stats_list), filters=request.args, page_title = "ANALYSIS")
 
