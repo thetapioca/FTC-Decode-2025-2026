@@ -301,9 +301,9 @@ analysis_page = base_style + nav_bar + '''
             <a href="{{ url_for('data_view', **dict(filters, sort='score_desc')) }}">▼</a>
           </th>
           <th>RUNS</th>
-          <th>AUTO 
-            <a href="{{ url_for('data_view', **dict(filters, sort='auto_asc')) }}">▲</a> 
-            <a href="{{ url_for('data_view', **dict(filters, sort='auto_desc')) }}">▼</a>
+          <th>AUTO CAPACITY 
+            <a href="{{ url_for('data_view', **dict(filters, sort='autoscore_asc')) }}">▲</a> 
+            <a href="{{ url_for('data_view', **dict(filters, sort='autoscore_desc')) }}">▼</a>
           </th>
 
           <th>INTEL</th>
@@ -326,7 +326,7 @@ analysis_page = base_style + nav_bar + '''
             </div>
           </td>
           <td>{{ stats.count }}</td>
-          <td><code>{{ stats.auto|upper }}</code></td>
+          <td><code>{{ stats.autoscore }}</code></td>
           <td style="font-size: 11px; color: var(--text-muted);">{{ stats.notes }}</td>
         </tr>
         {% endfor %}
@@ -483,6 +483,7 @@ def data_view():
             'count': 0,
             'avg': 0.0,
             'auto': p.get('auto', 'unknown'),
+            'autoscore':p.get('autoscore', '?'),
             'notes': p['notes']
         }
 
@@ -520,10 +521,10 @@ def data_view():
         stats_list.sort(key=lambda x: x[1]['avg'])
     elif sort_by == 'score_desc':
         stats_list.sort(key=lambda x: x[1]['avg'], reverse=True)
-    elif sort_by == 'auto_asc':
-        stats_list.sort(key=lambda x: x[1]['auto'])
-    elif sort_by == 'auto_desc':
-        stats_list.sort(key=lambda x: x[1]['auto'], reverse=True)
+    elif sort_by == 'autoscore_asc':
+        stats_list.sort(key=lambda x: int(x[1]['autoscore']) if str(x[1]['autoscore']).isdigit() else 0)
+    elif sort_by == 'autoscore_desc':
+        stats_list.sort(key=lambda x: int(x[1]['autoscore']) if str(x[1]['autoscore']).isdigit() else 0, reverse=True)
 
     return render_template_string(analysis_page, results=dict(stats_list), filters=request.args, page_title = "ANALYSIS")
 
